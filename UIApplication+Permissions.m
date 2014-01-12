@@ -140,15 +140,24 @@
 
 
 #pragma mark - Request permissions
-+(void)requestAccessToBluetoothLEWithSuccess:(void(^)())accessGranted andFailure:(void(^)(kPermissionAccess rejectReason))accessDenied {
++(void)requestAccessToBluetoothLEWithSuccess:(void(^)())accessGranted andFailure:(void(^)())accessDenied {
     
 }
 
-+(void)requestAccessToCalendarWithSuccess:(void(^)())accessGranted andFailure:(void(^)(kPermissionAccess rejectReason))accessDenied {
-    
++(void)requestAccessToCalendarWithSuccess:(void(^)())accessGranted andFailure:(void(^)())accessDenied {
+    EKEventStore *eventStore = [[EKEventStore alloc] init];
+    [eventStore requestAccessToEntityType:EKEntityTypeEvent completion:^(BOOL granted, NSError *error) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (granted) {
+                accessGranted();
+            } else {
+                accessDenied();
+            }
+        });
+    }];
 }
 
-+(void)requestAccessToContactsWithSuccess:(void(^)())accessGranted andFailure:(void(^)(kPermissionAccess rejectReason))accessDenied {
++(void)requestAccessToContactsWithSuccess:(void(^)())accessGranted andFailure:(void(^)())accessDenied {
     ABAddressBookRef addressBook = ABAddressBookCreateWithOptions(NULL, NULL);
     if(addressBook) {
         ABAddressBookRequestAccessWithCompletion(addressBook, ^(bool granted, CFErrorRef error) {
@@ -156,30 +165,30 @@
                 if (granted) {
                     accessGranted();
                 } else {
-                    accessDenied(kPermissionAccessDenied);
+                    accessDenied();
                 }
             });
         });
     }
 }
 
-+(void)requestAccessToLocationWithSuccess:(void(^)())accessGranted andFailure:(void(^)(kPermissionAccess rejectReason))accessDenied {
++(void)requestAccessToLocationWithSuccess:(void(^)())accessGranted andFailure:(void(^)())accessDenied {
     
 }
 
-+(void)requestAccessToMicrophoneWithSuccess:(void(^)())accessGranted andFailure:(void(^)(kPermissionAccess rejectReason))accessDenied {
++(void)requestAccessToMicrophoneWithSuccess:(void(^)())accessGranted andFailure:(void(^)())accessDenied {
     
 }
 
-+(void)requestAccessToMotionWithSuccess:(void(^)())accessGranted andFailure:(void(^)(kPermissionAccess rejectReason))accessDenied {
++(void)requestAccessToMotionWithSuccess:(void(^)())accessGranted andFailure:(void(^)())accessDenied {
     
 }
 
-+(void)requestAccessToPhotosWithSuccess:(void(^)())accessGranted andFailure:(void(^)(kPermissionAccess rejectReason))accessDenied {
++(void)requestAccessToPhotosWithSuccess:(void(^)())accessGranted andFailure:(void(^)())accessDenied {
     
 }
 
-+(void)requestAccessToRemindersWithSuccess:(void(^)())accessGranted andFailure:(void(^)(kPermissionAccess rejectReason))accessDenied {
++(void)requestAccessToRemindersWithSuccess:(void(^)())accessGranted andFailure:(void(^)())accessDenied {
     
 }
 
