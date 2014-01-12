@@ -142,10 +142,6 @@
 
 
 #pragma mark - Request permissions
-+(void)requestAccessToBluetoothLEWithSuccess:(void(^)())accessGranted {
-    //REQUIRES DELEGATE - NEEDS RETHINKING
-}
-
 +(void)requestAccessToCalendarWithSuccess:(void(^)())accessGranted andFailure:(void(^)())accessDenied {
     EKEventStore *eventStore = [[EKEventStore alloc] init];
     [eventStore requestAccessToEntityType:EKEntityTypeEvent completion:^(BOOL granted, NSError *error) {
@@ -172,10 +168,6 @@
             });
         });
     }
-}
-
-+(void)requestAccessToLocationWithSuccess:(void(^)())accessGranted andFailure:(void(^)())accessDenied {
-    //REQUIRES DELEGATE - NEEDS RETHINKING
 }
 
 +(void)requestAccessToMicrophoneWithSuccess:(void(^)())accessGranted andFailure:(void(^)())accessDenied {
@@ -221,6 +213,18 @@
         });
     }];
 }
+
+
+#pragma mark - Needs investigating
+/*
+ +(void)requestAccessToBluetoothLEWithSuccess:(void(^)())accessGranted {
+ //REQUIRES DELEGATE - NEEDS RETHINKING
+ }
+ 
+ +(void)requestAccessToLocationWithSuccess:(void(^)())accessGranted andFailure:(void(^)())accessDenied {
+ //REQUIRES DELEGATE - NEEDS RETHINKING
+ }
+*/
 
 
 @end
