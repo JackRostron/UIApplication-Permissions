@@ -7,6 +7,7 @@
 //
 
 #import "UIApplication+Permissions.h"
+#import <objc/runtime.h>
 
 //Import required frameworks
 @import AddressBook;
@@ -16,6 +17,19 @@
 @import CoreLocation;
 @import CoreMotion;
 @import EventKit;
+
+typedef void (^LocationSuccessCallback)();
+typedef void (^LocationFailureCallback)();
+
+static char PermissionsLocationManagerPropertyKey;
+static char PermissionsLocationBlockSuccessPropertyKey;
+static char PermissionsLocationBlockFailurePropertyKey;
+
+@interface UIApplication () <CLLocationManagerDelegate>
+@property (nonatomic, retain) CLLocationManager *permissionsLocationManager;
+@property (nonatomic, copy) LocationSuccessCallback locationSuccessCallbackProperty;
+@property (nonatomic, copy) LocationFailureCallback locationFailureCallbackProperty;
+@end
 
 
 @implementation UIApplication (Permissions)
@@ -220,11 +234,51 @@
  +(void)requestAccessToBluetoothLEWithSuccess:(void(^)())accessGranted {
  //REQUIRES DELEGATE - NEEDS RETHINKING
  }
- 
- +(void)requestAccessToLocationWithSuccess:(void(^)())accessGranted andFailure:(void(^)())accessDenied {
- //REQUIRES DELEGATE - NEEDS RETHINKING
- }
-*/
+ */
 
+-(void)requestAccessToLocationWithSuccess:(void(^)())accessGranted andFailure:(void(^)())accessDenied {
+    self.permissionsLocationManager = [[CLLocationManager alloc] init];
+    self.permissionsLocationManager.delegate = self;
+    
+    self.locationSuccessCallbackProperty = accessGranted;
+    self.locationFailureCallbackProperty = accessDenied;
+    [self.permissionsLocationManager startUpdatingLocation];
+}
+
+
+#pragma mark - Location manager injection
+-(CLLocationManager *)permissionsLocationManager {
+    return objc_getAssociatedObject(self, &PermissionsLocationManagerPropertyKey);
+}
+
+-(void)setPermissionsLocationManager:(CLLocationManager *)manager {
+    objc_setAssociatedObject(self, &PermissionsLocationManagerPropertyKey, manager, OBJC_ASSOCIATION_RETAIN);
+}
+
+-(LocationSuccessCallback)locationSuccessCallbackProperty {
+    return objc_getAssociatedObject(self, &PermissionsLocationBlockSuccessPropertyKey);
+}
+
+-(void)setLocationSuccessCallbackProperty:(LocationSuccessCallback)locationCallbackProperty {
+    objc_setAssociatedObject(self, &PermissionsLocationBlockSuccessPropertyKey, locationCallbackProperty, OBJC_ASSOCIATION_COPY);
+}
+
+-(LocationFailureCallback)locationFailureCallbackProperty {
+    return objc_getAssociatedObject(self, &PermissionsLocationBlockFailurePropertyKey);
+}
+
+-(void)setLocationFailureCallbackProperty:(LocationFailureCallback)locationFailureCallbackProperty {
+    objc_setAssociatedObject(self, &PermissionsLocationBlockFailurePropertyKey, locationFailureCallbackProperty, OBJC_ASSOCIATION_COPY);
+}
+
+
+#pragma mark - Location manager delegate
+- (void)locationManager:(CLLocationManager *)manager didChangeAuthorizationStatus:(CLAuthorizationStatus)status {
+    if (status == kCLAuthorizationStatusAuthorized) {
+        self.locationSuccessCallbackProperty();
+    } else if (status != kCLAuthorizationStatusNotDetermined) {
+        self.locationFailureCallbackProperty();
+    }
+}
 
 @end

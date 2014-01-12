@@ -8,6 +8,8 @@
 
 #import <UIKit/UIKit.h>
 
+@import CoreLocation;
+
 typedef enum {
     kPermissionTypeBluetoothLE,
     kPermissionTypeCalendar,
@@ -45,11 +47,13 @@ typedef enum {
 +(void)requestAccessToPhotosWithSuccess:(void(^)())accessGranted andFailure:(void(^)())accessDenied;
 +(void)requestAccessToRemindersWithSuccess:(void(^)())accessGranted andFailure:(void(^)())accessDenied;
 
+//Instance methods
+-(void)requestAccessToLocationWithSuccess:(void(^)())accessGranted andFailure:(void(^)())accessDenied;
+
 //No failure callback available
 +(void)requestAccessToMotionWithSuccess:(void(^)())accessGranted;
 
 //Needs investigating - unsure whether it can be implemented because of required delegate callbacks
 //+(void)requestAccessToBluetoothLEWithSuccess:(void(^)())accessGranted;
-//+(void)requestAccessToLocationWithSuccess:(void(^)())accessGranted andFailure:(void(^)())accessDenied;
 
 @end
