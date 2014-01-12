@@ -11,8 +11,10 @@
 //Import required frameworks
 @import AddressBook;
 @import AssetsLibrary;
+@import AVFoundation;
 @import CoreBluetooth;
 @import CoreLocation;
+@import CoreMotion;
 @import EventKit;
 
 
@@ -140,8 +142,8 @@
 
 
 #pragma mark - Request permissions
-+(void)requestAccessToBluetoothLEWithSuccess:(void(^)())accessGranted andFailure:(void(^)())accessDenied {
-    
++(void)requestAccessToBluetoothLEWithSuccess:(void(^)())accessGranted {
+    //REQUIRES DELEGATE - NEEDS RETHINKING
 }
 
 +(void)requestAccessToCalendarWithSuccess:(void(^)())accessGranted andFailure:(void(^)())accessDenied {
@@ -173,15 +175,29 @@
 }
 
 +(void)requestAccessToLocationWithSuccess:(void(^)())accessGranted andFailure:(void(^)())accessDenied {
-    
+    //REQUIRES DELEGATE - NEEDS RETHINKING
 }
 
 +(void)requestAccessToMicrophoneWithSuccess:(void(^)())accessGranted andFailure:(void(^)())accessDenied {
-    
+    AVAudioSession *session = [[AVAudioSession alloc] init];
+    [session requestRecordPermission:^(BOOL granted) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (granted) {
+                accessGranted();
+            } else {
+                accessDenied();
+            }
+        });
+    }];
 }
 
-+(void)requestAccessToMotionWithSuccess:(void(^)())accessGranted andFailure:(void(^)())accessDenied {
-    
++(void)requestAccessToMotionWithSuccess:(void(^)())accessGranted {
+    CMMotionActivityManager *motionManager = [[CMMotionActivityManager alloc] init];
+    NSOperationQueue *motionQueue = [[NSOperationQueue alloc] init];
+    [motionManager startActivityUpdatesToQueue:motionQueue withHandler:^(CMMotionActivity *activity) {
+        accessGranted();
+        [motionManager stopActivityUpdates];
+    }];
 }
 
 +(void)requestAccessToPhotosWithSuccess:(void(^)())accessGranted andFailure:(void(^)())accessDenied {
@@ -194,7 +210,16 @@
 }
 
 +(void)requestAccessToRemindersWithSuccess:(void(^)())accessGranted andFailure:(void(^)())accessDenied {
-    
+    EKEventStore *eventStore = [[EKEventStore alloc] init];
+    [eventStore requestAccessToEntityType:EKEntityTypeReminder completion:^(BOOL granted, NSError *error) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (granted) {
+                accessGranted();
+            } else {
+                accessDenied();
+            }
+        });
+    }];
 }
 
 

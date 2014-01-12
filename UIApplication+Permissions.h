@@ -39,13 +39,15 @@ typedef enum {
 +(kPermissionAccess)hasAccessToReminders;
 
 //Request permission with callback
-+(void)requestAccessToBluetoothLEWithSuccess:(void(^)())accessGranted andFailure:(void(^)())accessDenied;
 +(void)requestAccessToCalendarWithSuccess:(void(^)())accessGranted andFailure:(void(^)())accessDenied;
 +(void)requestAccessToContactsWithSuccess:(void(^)())accessGranted andFailure:(void(^)())accessDenied;
 +(void)requestAccessToLocationWithSuccess:(void(^)())accessGranted andFailure:(void(^)())accessDenied;
 +(void)requestAccessToMicrophoneWithSuccess:(void(^)())accessGranted andFailure:(void(^)())accessDenied;
-+(void)requestAccessToMotionWithSuccess:(void(^)())accessGranted andFailure:(void(^)())accessDenied;
 +(void)requestAccessToPhotosWithSuccess:(void(^)())accessGranted andFailure:(void(^)())accessDenied;
 +(void)requestAccessToRemindersWithSuccess:(void(^)())accessGranted andFailure:(void(^)())accessDenied;
+
+//No failure callback available
++(void)requestAccessToBluetoothLEWithSuccess:(void(^)())accessGranted;
++(void)requestAccessToMotionWithSuccess:(void(^)())accessGranted;
 
 @end
