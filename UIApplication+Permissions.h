@@ -1,6 +1,6 @@
 //
-//  UIApplication+Permissions.h
-//  UIApplication+Permissions Sample
+//  UIApplication-Permissions.h
+//  UIApplication-Permissions Sample
 //
 //  Created by Jack Rostron on 12/01/2014.
 //  Copyright (c) 2014 Rostron. All rights reserved.
@@ -33,27 +33,27 @@ typedef enum {
 @interface UIApplication (Permissions)
 
 //Check permission of service. Cannot check microphone or motion without asking user for permission
-+(kPermissionAccess)hasAccessToBluetoothLE;
-+(kPermissionAccess)hasAccessToCalendar;
-+(kPermissionAccess)hasAccessToContacts;
-+(kPermissionAccess)hasAccessToLocation;
-+(kPermissionAccess)hasAccessToPhotos;
-+(kPermissionAccess)hasAccessToReminders;
+-(kPermissionAccess)hasAccessToBluetoothLE;
+-(kPermissionAccess)hasAccessToCalendar;
+-(kPermissionAccess)hasAccessToContacts;
+-(kPermissionAccess)hasAccessToLocation;
+-(kPermissionAccess)hasAccessToPhotos;
+-(kPermissionAccess)hasAccessToReminders;
 
 //Request permission with callback
-+(void)requestAccessToCalendarWithSuccess:(void(^)())accessGranted andFailure:(void(^)())accessDenied;
-+(void)requestAccessToContactsWithSuccess:(void(^)())accessGranted andFailure:(void(^)())accessDenied;
-+(void)requestAccessToMicrophoneWithSuccess:(void(^)())accessGranted andFailure:(void(^)())accessDenied;
-+(void)requestAccessToPhotosWithSuccess:(void(^)())accessGranted andFailure:(void(^)())accessDenied;
-+(void)requestAccessToRemindersWithSuccess:(void(^)())accessGranted andFailure:(void(^)())accessDenied;
+-(void)requestAccessToCalendarWithSuccess:(void(^)())accessGranted andFailure:(void(^)())accessDenied;
+-(void)requestAccessToContactsWithSuccess:(void(^)())accessGranted andFailure:(void(^)())accessDenied;
+-(void)requestAccessToMicrophoneWithSuccess:(void(^)())accessGranted andFailure:(void(^)())accessDenied;
+-(void)requestAccessToPhotosWithSuccess:(void(^)())accessGranted andFailure:(void(^)())accessDenied;
+-(void)requestAccessToRemindersWithSuccess:(void(^)())accessGranted andFailure:(void(^)())accessDenied;
 
 //Instance methods
 -(void)requestAccessToLocationWithSuccess:(void(^)())accessGranted andFailure:(void(^)())accessDenied;
 
 //No failure callback available
-+(void)requestAccessToMotionWithSuccess:(void(^)())accessGranted;
+-(void)requestAccessToMotionWithSuccess:(void(^)())accessGranted;
 
 //Needs investigating - unsure whether it can be implemented because of required delegate callbacks
-//+(void)requestAccessToBluetoothLEWithSuccess:(void(^)())accessGranted;
+//-(void)requestAccessToBluetoothLEWithSuccess:(void(^)())accessGranted;
 
 @end

@@ -1,6 +1,6 @@
 //
-//  UIApplication+Permissions.m
-//  UIApplication+Permissions Sample
+//  UIApplication-Permissions.m
+//  UIApplication-Permissions Sample
 //
 //  Created by Jack Rostron on 12/01/2014.
 //  Copyright (c) 2014 Rostron. All rights reserved.
@@ -36,7 +36,7 @@ static char PermissionsLocationBlockFailurePropertyKey;
 
 
 #pragma mark - Check permissions
-+(kPermissionAccess)hasAccessToBluetoothLE {
+-(kPermissionAccess)hasAccessToBluetoothLE {
     switch ([[[CBCentralManager alloc] init] state]) {
         case CBCentralManagerStateUnsupported:
             return kPermissionAccessUnsupported;
@@ -52,7 +52,7 @@ static char PermissionsLocationBlockFailurePropertyKey;
     }
 }
 
-+(kPermissionAccess)hasAccessToCalendar {
+-(kPermissionAccess)hasAccessToCalendar {
     switch ([EKEventStore authorizationStatusForEntityType:EKEntityTypeEvent]) {
         case EKAuthorizationStatusAuthorized:
             return kPermissionAccessGranted;
@@ -72,7 +72,7 @@ static char PermissionsLocationBlockFailurePropertyKey;
     }
 }
 
-+(kPermissionAccess)hasAccessToContacts {
+-(kPermissionAccess)hasAccessToContacts {
     switch (ABAddressBookGetAuthorizationStatus()) {
         case kABAuthorizationStatusAuthorized:
             return kPermissionAccessGranted;
@@ -92,7 +92,7 @@ static char PermissionsLocationBlockFailurePropertyKey;
     }
 }
 
-+(kPermissionAccess)hasAccessToLocation {
+-(kPermissionAccess)hasAccessToLocation {
     switch ([CLLocationManager authorizationStatus]) {
         case kCLAuthorizationStatusAuthorized:
             return kPermissionAccessGranted;
@@ -113,7 +113,7 @@ static char PermissionsLocationBlockFailurePropertyKey;
     return kPermissionAccessUnknown;
 }
 
-+(kPermissionAccess)hasAccessToPhotos {
+-(kPermissionAccess)hasAccessToPhotos {
     switch ([ALAssetsLibrary authorizationStatus]) {
         case ALAuthorizationStatusAuthorized:
             return kPermissionAccessGranted;
@@ -133,7 +133,7 @@ static char PermissionsLocationBlockFailurePropertyKey;
     }
 }
 
-+(kPermissionAccess)hasAccessToReminders {
+-(kPermissionAccess)hasAccessToReminders {
     switch ([EKEventStore authorizationStatusForEntityType:EKEntityTypeReminder]) {
         case EKAuthorizationStatusAuthorized:
             return kPermissionAccessGranted;
@@ -156,7 +156,7 @@ static char PermissionsLocationBlockFailurePropertyKey;
 
 
 #pragma mark - Request permissions
-+(void)requestAccessToCalendarWithSuccess:(void(^)())accessGranted andFailure:(void(^)())accessDenied {
+-(void)requestAccessToCalendarWithSuccess:(void(^)())accessGranted andFailure:(void(^)())accessDenied {
     EKEventStore *eventStore = [[EKEventStore alloc] init];
     [eventStore requestAccessToEntityType:EKEntityTypeEvent completion:^(BOOL granted, NSError *error) {
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -169,7 +169,7 @@ static char PermissionsLocationBlockFailurePropertyKey;
     }];
 }
 
-+(void)requestAccessToContactsWithSuccess:(void(^)())accessGranted andFailure:(void(^)())accessDenied {
+-(void)requestAccessToContactsWithSuccess:(void(^)())accessGranted andFailure:(void(^)())accessDenied {
     ABAddressBookRef addressBook = ABAddressBookCreateWithOptions(NULL, NULL);
     if(addressBook) {
         ABAddressBookRequestAccessWithCompletion(addressBook, ^(bool granted, CFErrorRef error) {
@@ -184,7 +184,7 @@ static char PermissionsLocationBlockFailurePropertyKey;
     }
 }
 
-+(void)requestAccessToMicrophoneWithSuccess:(void(^)())accessGranted andFailure:(void(^)())accessDenied {
+-(void)requestAccessToMicrophoneWithSuccess:(void(^)())accessGranted andFailure:(void(^)())accessDenied {
     AVAudioSession *session = [[AVAudioSession alloc] init];
     [session requestRecordPermission:^(BOOL granted) {
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -197,7 +197,7 @@ static char PermissionsLocationBlockFailurePropertyKey;
     }];
 }
 
-+(void)requestAccessToMotionWithSuccess:(void(^)())accessGranted {
+-(void)requestAccessToMotionWithSuccess:(void(^)())accessGranted {
     CMMotionActivityManager *motionManager = [[CMMotionActivityManager alloc] init];
     NSOperationQueue *motionQueue = [[NSOperationQueue alloc] init];
     [motionManager startActivityUpdatesToQueue:motionQueue withHandler:^(CMMotionActivity *activity) {
@@ -206,7 +206,7 @@ static char PermissionsLocationBlockFailurePropertyKey;
     }];
 }
 
-+(void)requestAccessToPhotosWithSuccess:(void(^)())accessGranted andFailure:(void(^)())accessDenied {
+-(void)requestAccessToPhotosWithSuccess:(void(^)())accessGranted andFailure:(void(^)())accessDenied {
     ALAssetsLibrary *assetsLibrary = [[ALAssetsLibrary alloc] init];
     [assetsLibrary enumerateGroupsWithTypes:ALAssetsGroupAlbum usingBlock:^(ALAssetsGroup *group, BOOL *stop) {
         accessGranted();
@@ -215,7 +215,7 @@ static char PermissionsLocationBlockFailurePropertyKey;
     }];
 }
 
-+(void)requestAccessToRemindersWithSuccess:(void(^)())accessGranted andFailure:(void(^)())accessDenied {
+-(void)requestAccessToRemindersWithSuccess:(void(^)())accessGranted andFailure:(void(^)())accessDenied {
     EKEventStore *eventStore = [[EKEventStore alloc] init];
     [eventStore requestAccessToEntityType:EKEntityTypeReminder completion:^(BOOL granted, NSError *error) {
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -231,7 +231,7 @@ static char PermissionsLocationBlockFailurePropertyKey;
 
 #pragma mark - Needs investigating
 /*
- +(void)requestAccessToBluetoothLEWithSuccess:(void(^)())accessGranted {
+ -(void)requestAccessToBluetoothLEWithSuccess:(void(^)())accessGranted {
  //REQUIRES DELEGATE - NEEDS RETHINKING
  }
  */
