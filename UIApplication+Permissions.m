@@ -18,6 +18,8 @@
 
 @implementation UIApplication (Permissions)
 
+
+#pragma mark - Check permissions
 +(kPermissionAccess)hasAccessToBluetoothLE {
     switch ([[[CBCentralManager alloc] init] state]) {
         case CBCentralManagerStateUnsupported:
@@ -134,6 +136,51 @@
             break;
     }
     return kPermissionAccessUnknown;
+}
+
+
+#pragma mark - Request permissions
++(void)requestAccessToBluetoothLEWithSuccess:(void(^)())accessGranted andFailure:(void(^)(kPermissionAccess rejectReason))accessDenied {
+    
+}
+
++(void)requestAccessToCalendarWithSuccess:(void(^)())accessGranted andFailure:(void(^)(kPermissionAccess rejectReason))accessDenied {
+    
+}
+
++(void)requestAccessToContactsWithSuccess:(void(^)())accessGranted andFailure:(void(^)(kPermissionAccess rejectReason))accessDenied {
+    ABAddressBookRef addressBook = ABAddressBookCreateWithOptions(NULL, NULL);
+    if(addressBook) {
+        ABAddressBookRequestAccessWithCompletion(addressBook, ^(bool granted, CFErrorRef error) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if (granted) {
+                    accessGranted();
+                } else {
+                    accessDenied(kPermissionAccessDenied);
+                }
+            });
+        });
+    }
+}
+
++(void)requestAccessToLocationWithSuccess:(void(^)())accessGranted andFailure:(void(^)(kPermissionAccess rejectReason))accessDenied {
+    
+}
+
++(void)requestAccessToMicrophoneWithSuccess:(void(^)())accessGranted andFailure:(void(^)(kPermissionAccess rejectReason))accessDenied {
+    
+}
+
++(void)requestAccessToMotionWithSuccess:(void(^)())accessGranted andFailure:(void(^)(kPermissionAccess rejectReason))accessDenied {
+    
+}
+
++(void)requestAccessToPhotosWithSuccess:(void(^)())accessGranted andFailure:(void(^)(kPermissionAccess rejectReason))accessDenied {
+    
+}
+
++(void)requestAccessToRemindersWithSuccess:(void(^)())accessGranted andFailure:(void(^)(kPermissionAccess rejectReason))accessDenied {
+    
 }
 
 

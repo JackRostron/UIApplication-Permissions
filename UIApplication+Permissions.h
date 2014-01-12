@@ -38,4 +38,14 @@ typedef enum {
 +(kPermissionAccess)hasAccessToPhotos;
 +(kPermissionAccess)hasAccessToReminders;
 
+//Request permission with callback
++(void)requestAccessToBluetoothLEWithSuccess:(void(^)())accessGranted andFailure:(void(^)(kPermissionAccess rejectReason))accessDenied;
++(void)requestAccessToCalendarWithSuccess:(void(^)())accessGranted andFailure:(void(^)(kPermissionAccess rejectReason))accessDenied;
++(void)requestAccessToContactsWithSuccess:(void(^)())accessGranted andFailure:(void(^)(kPermissionAccess rejectReason))accessDenied;
++(void)requestAccessToLocationWithSuccess:(void(^)())accessGranted andFailure:(void(^)(kPermissionAccess rejectReason))accessDenied;
++(void)requestAccessToMicrophoneWithSuccess:(void(^)())accessGranted andFailure:(void(^)(kPermissionAccess rejectReason))accessDenied;
++(void)requestAccessToMotionWithSuccess:(void(^)())accessGranted andFailure:(void(^)(kPermissionAccess rejectReason))accessDenied;
++(void)requestAccessToPhotosWithSuccess:(void(^)())accessGranted andFailure:(void(^)(kPermissionAccess rejectReason))accessDenied;
++(void)requestAccessToRemindersWithSuccess:(void(^)())accessGranted andFailure:(void(^)(kPermissionAccess rejectReason))accessDenied;
+
 @end
