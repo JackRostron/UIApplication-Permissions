@@ -8,19 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-@import CoreLocation;
-
-typedef enum {
-    kPermissionTypeBluetoothLE,
-    kPermissionTypeCalendar,
-    kPermissionTypeContacts,
-    kPermissionTypeLocation,
-    kPermissionTypeMicrophone,
-    kPermissionTypeMotion,
-    kPermissionTypePhotos,
-    kPermissionTypeReminders,
-} kPermissionType;
-
 typedef enum {
     kPermissionAccessDenied, //User has rejected feature
     kPermissionAccessGranted, //User has accepted feature
@@ -54,6 +41,6 @@ typedef enum {
 -(void)requestAccessToMotionWithSuccess:(void(^)())accessGranted;
 
 //Needs investigating - unsure whether it can be implemented because of required delegate callbacks
-//-(void)requestAccessToBluetoothLEWithSuccess:(void(^)())accessGranted;
+-(void)requestAccessToBluetoothLEWithSuccess:(void(^)())accessGranted andFailure:(void(^)())accessDenied;
 
 @end

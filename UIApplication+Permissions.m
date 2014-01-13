@@ -18,6 +18,7 @@
 @import CoreMotion;
 @import EventKit;
 
+//Location injection
 typedef void (^LocationSuccessCallback)();
 typedef void (^LocationFailureCallback)();
 
@@ -25,10 +26,23 @@ static char PermissionsLocationManagerPropertyKey;
 static char PermissionsLocationBlockSuccessPropertyKey;
 static char PermissionsLocationBlockFailurePropertyKey;
 
-@interface UIApplication () <CLLocationManagerDelegate>
-@property (nonatomic, retain) CLLocationManager *permissionsLocationManager;
+//Bluetooth injection
+typedef void (^BluetoothSuccessCallback)();
+typedef void (^BluetoothFailureCallback)();
+
+static char PermissionsBluetoothManagerPropertyKey;
+static char PermissionsBluetoothBlockSuccessPropertyKey;
+static char PermissionsBluetoothBlockFailurePropertyKey;
+
+
+@interface UIApplication () <CLLocationManagerDelegate, CBCentralManagerDelegate>
+@property (nonatomic, strong) CLLocationManager *permissionsLocationManager;
 @property (nonatomic, copy) LocationSuccessCallback locationSuccessCallbackProperty;
 @property (nonatomic, copy) LocationFailureCallback locationFailureCallbackProperty;
+
+@property (nonatomic, strong) CBCentralManager *permissionsBluetoothManager;
+@property (nonatomic, copy) BluetoothSuccessCallback bluetoothSuccessCallbackProperty;
+@property (nonatomic, copy) BluetoothFailureCallback bluetoothFailureCallbackProperty;
 @end
 
 
@@ -156,6 +170,13 @@ static char PermissionsLocationBlockFailurePropertyKey;
 
 
 #pragma mark - Request permissions
+-(void)requestAccessToBluetoothLEWithSuccess:(void(^)())accessGranted andFailure:(void(^)())accessDenied {
+    self.permissionsBluetoothManager = [[CBCentralManager alloc] initWithDelegate:self queue:nil];
+    self.bluetoothSuccessCallbackProperty = accessGranted;
+    self.bluetoothFailureCallbackProperty = accessDenied;
+    [self.permissionsBluetoothManager scanForPeripheralsWithServices:nil options:nil];
+}
+
 -(void)requestAccessToCalendarWithSuccess:(void(^)())accessGranted andFailure:(void(^)())accessDenied {
     EKEventStore *eventStore = [[EKEventStore alloc] init];
     [eventStore requestAccessToEntityType:EKEntityTypeEvent completion:^(BOOL granted, NSError *error) {
@@ -182,6 +203,15 @@ static char PermissionsLocationBlockFailurePropertyKey;
             });
         });
     }
+}
+
+-(void)requestAccessToLocationWithSuccess:(void(^)())accessGranted andFailure:(void(^)())accessDenied {
+    self.permissionsLocationManager = [[CLLocationManager alloc] init];
+    self.permissionsLocationManager.delegate = self;
+    
+    self.locationSuccessCallbackProperty = accessGranted;
+    self.locationFailureCallbackProperty = accessDenied;
+    [self.permissionsLocationManager startUpdatingLocation];
 }
 
 -(void)requestAccessToMicrophoneWithSuccess:(void(^)())accessGranted andFailure:(void(^)())accessDenied {
@@ -229,23 +259,6 @@ static char PermissionsLocationBlockFailurePropertyKey;
 }
 
 
-#pragma mark - Needs investigating
-/*
- -(void)requestAccessToBluetoothLEWithSuccess:(void(^)())accessGranted {
- //REQUIRES DELEGATE - NEEDS RETHINKING
- }
- */
-
--(void)requestAccessToLocationWithSuccess:(void(^)())accessGranted andFailure:(void(^)())accessDenied {
-    self.permissionsLocationManager = [[CLLocationManager alloc] init];
-    self.permissionsLocationManager.delegate = self;
-    
-    self.locationSuccessCallbackProperty = accessGranted;
-    self.locationFailureCallbackProperty = accessDenied;
-    [self.permissionsLocationManager startUpdatingLocation];
-}
-
-
 #pragma mark - Location manager injection
 -(CLLocationManager *)permissionsLocationManager {
     return objc_getAssociatedObject(self, &PermissionsLocationManagerPropertyKey);
@@ -280,5 +293,46 @@ static char PermissionsLocationBlockFailurePropertyKey;
         self.locationFailureCallbackProperty();
     }
 }
+
+
+#pragma mark - Bluetooth manager injection
+-(CBCentralManager *)permissionsBluetoothManager {
+    return objc_getAssociatedObject(self, &PermissionsBluetoothManagerPropertyKey);
+}
+
+-(void)setPermissionsBluetoothManager:(CBCentralManager *)manager {
+    objc_setAssociatedObject(self, &PermissionsBluetoothManagerPropertyKey, manager, OBJC_ASSOCIATION_RETAIN);
+}
+
+-(BluetoothSuccessCallback)bluetoothSuccessCallbackProperty {
+    return objc_getAssociatedObject(self, &PermissionsBluetoothBlockSuccessPropertyKey);
+}
+
+-(void)setBluetoothSuccessCallbackProperty:(LocationSuccessCallback)bluetoothSuccessCallbackProperty {
+    objc_setAssociatedObject(self, &PermissionsBluetoothBlockSuccessPropertyKey, bluetoothSuccessCallbackProperty, OBJC_ASSOCIATION_COPY);
+}
+
+-(BluetoothFailureCallback)bluetoothFailureCallbackProperty {
+    return objc_getAssociatedObject(self, &PermissionsBluetoothBlockFailurePropertyKey);
+}
+
+-(void)setBluetoothFailureCallbackProperty:(LocationFailureCallback)bluetoothFailureCallbackProperty {
+    objc_setAssociatedObject(self, &PermissionsBluetoothBlockFailurePropertyKey, bluetoothFailureCallbackProperty, OBJC_ASSOCIATION_COPY);
+}
+
+
+#pragma mark - Bluetooth manager delegate
+-(void)centralManagerDidUpdateState:(CBCentralManager *)central {
+    if (central.state == CBCentralManagerStateUnauthorized) {
+        self.bluetoothFailureCallbackProperty();
+    } else if (central.state == CBCentralManagerStateUnknown) {
+        //We don't want to act on unknown, since unknown will be called during initial check
+        //We need to trap it in the bluetooth callback because if it isn't unknown/unauthorized we are good
+    } else {
+        self.bluetoothSuccessCallbackProperty();
+    }
+}
+
+
 
 @end
