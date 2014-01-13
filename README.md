@@ -56,3 +56,7 @@ You can ask the user to grant a permission by calling each method directly on `U
 ##Known issues
 
 BluetoothLE reporting not powered on and is not prompting the user with the default alert. Always automatically reports it is good.
+
+No checks for framework import/API availability which could lead to crashing on pre-iOS7.
+
+No current method for adding a customised string to the permissions alert prompt.
